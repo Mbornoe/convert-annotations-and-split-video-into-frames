@@ -1,0 +1,11 @@
+
+cmake_install.cmake
+CMakeFiles/
+nightClip1/
+nightClip2/
+nightClip3/
+nightClip4/
+nightClip5/
+CMakeCache.txt
+convertAnno
+Makefile

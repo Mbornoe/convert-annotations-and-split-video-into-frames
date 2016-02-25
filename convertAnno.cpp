@@ -55,10 +55,12 @@ int findLargestAnnoNumberInFile(std::vector<std::string> annotationVector){
 }
 
 int findSmallestAnnoNumberInFile(std::vector<std::string> annotationVector){
+  //std::cout << atoi(annotationVector.at( 0 ).c_str()) << std::endl;
   return atoi(annotationVector.at( 0 ).c_str());
 }
 
 void readAllTxt( int argc, char** argv){
+  std::string outputDelimiter = ";";
   string str;
   string delimframeNumber = "\t";
 
@@ -70,7 +72,7 @@ void readAllTxt( int argc, char** argv){
 
   std::ofstream myfile;
   myfile.open("output.txt");
-  myfile << "Filename\tAnnotation tag\tUpper left corner X\tUpper left corner Y\tLower right corner X\tLower right corner Y\tOrigin file\tOrigin frame number\tOrigin track\tOrigin track frame number" << std::endl;
+  myfile << "Filename" << outputDelimiter<< "Annotation tag" << outputDelimiter<< "Upper left corner X" << outputDelimiter<< "Upper left corner Y" << outputDelimiter<< "Lower right corner X" << outputDelimiter<< "Lower right corner Y" << outputDelimiter<< "Origin file" << outputDelimiter<< "Origin frame number" << outputDelimiter<< "Origin track" << outputDelimiter<< "Origin track frame number" << std::endl;
 
   for (int i = 3; i < argc; ++i)
   {
@@ -79,15 +81,17 @@ void readAllTxt( int argc, char** argv){
 
     if (i % 2) // every second to fit input argument syntax
     { 
+
       memset(inputTextPath, 0, sizeof(inputTextPath)); 
       sprintf(inputTextPath,"%s/%s",argv[1],argv[i]);
-
+      //std::cout << "Hello moto: " << inputTextPath<< std::endl;
       ifstream inputTextFile(inputTextPath);
 
       int auha=1;
       while (std::getline(inputTextFile, str)) 
       {
         firstExpandedAnnotationVector.push_back(str);
+        //std::cout << str << std::endl;
         size_t pos = 0;
         string token;
           while (( (pos = str.find(delimframeNumber)) != std::string::npos) && (auha<=1)) {
@@ -99,10 +103,13 @@ void readAllTxt( int argc, char** argv){
     
         auha=1;
       }
+      //std::cout << "argv[" << i << "]: " << argv[i] << std::endl;
       int returnedLargestNumber = findLargestAnnoNumberInFile(firstExpandedAnnotationVector);
+
       int returnedSmallestNumber = findSmallestAnnoNumberInFile(firstExpandedAnnotationVector);
+      //int returnedSmallestNumber = 0;
     
-      //std::cout << "argv[" << i << "]: " << argv[i] << " largest frame number is: " << returnedLargestNumber << " smallest frame number is: " << returnedSmallestNumber << std::endl;
+     // std::cout << "argv[" << i << "]: " << argv[i] << " largest frame number is: " << returnedLargestNumber << " smallest frame number is: " << returnedSmallestNumber << std::endl;
 
       for (int frameNumber = returnedSmallestNumber; frameNumber <= returnedLargestNumber; ++frameNumber)
       {
@@ -113,7 +120,7 @@ void readAllTxt( int argc, char** argv){
         for (int k = 0; k < firstExpandedAnnotationVector.size(); ++k)
         {
           int frameNumberInVector = atoi(firstExpandedAnnotationVector.at( k ).c_str());
-
+          
           if (frameNumberInVector==frameNumber)
           {
             foundFirstFrame=true;
@@ -147,7 +154,7 @@ void readAllTxt( int argc, char** argv){
               int height = atoi(xFirst.at( localX4+(4*m)  ).c_str());
 
               memset(annotationString, 0, sizeof(annotationString)); 
-              sprintf(annotationString+strlen(annotationString),"%i\t%i\t%i\t%i",x,y,x+width,y+height);
+              sprintf(annotationString+strlen(annotationString),"%i%s%i%s%i%s%i",x,outputDelimiter.c_str(),y,outputDelimiter.c_str(),x+width,outputDelimiter.c_str(),y+height);
                 
               memset(annotationTag, 0, sizeof(annotationTag)); 
               if (atoi(argv[i+1])==0) // Go
@@ -180,12 +187,12 @@ void readAllTxt( int argc, char** argv){
               }
 
               char originFileString[100];
-              sprintf(originFileString,"%s/%s.avi\t%i\t%s/%s.avi\t%i",argv[1],argv[2],frameNumber,argv[1],argv[2],frameNumber);
+              sprintf(originFileString,"%s/%s.avi%s%i%s%s/%s.avi%s%i",argv[1],argv[2],outputDelimiter.c_str(),frameNumber,outputDelimiter.c_str(),argv[1],argv[2],outputDelimiter.c_str(),frameNumber);
               char decimalFramenumber[15];
               sprintf(decimalFramenumber,"%.5i",frameNumber);
               //std::cout<< "Decimal Number: " << decimalFramenumber << std::endl;
 
-              myfile << argv[2] << "-" << decimalFramenumber << ".png" << "\t"<< annotationTag << "\t"<< annotationString << "\t"<< originFileString << std::endl;     
+              myfile << argv[2] << "-" << decimalFramenumber << ".png" << outputDelimiter << annotationTag << outputDelimiter<< annotationString << outputDelimiter<< originFileString << std::endl;     
             }
           }
           memset(annotationString, 0, sizeof(annotationString)); 
@@ -197,7 +204,7 @@ void readAllTxt( int argc, char** argv){
 
   }
   myfile.close();
-  waitKey();
+  //waitKey();
 }
 static void help()
 {
